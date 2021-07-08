@@ -1,7 +1,6 @@
-use core::ops::{Add, Mul, Neg, Sub};
-use rand::Rng;
-use crate::fields::{const_fq, FieldElement, Fq, Fq2, Fq6};
 use crate::arith::U256;
+use crate::fields::{const_fq, FieldElement, Fq, Fq2, Fq6};
+use core::ops::{Add, Mul, Neg, Sub};
 
 fn frobenius_coeffs_c1(power: usize) -> Fq2 {
     match power % 12 {
@@ -50,8 +49,8 @@ fn frobenius_coeffs_c1(power: usize) -> Fq2 {
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(C)]
 pub struct Fq12 {
-    c0: Fq6,
-    c1: Fq6,
+    pub c0: Fq6,
+    pub c1: Fq6,
 }
 
 impl Fq12 {
@@ -112,7 +111,8 @@ impl Fq12 {
     pub fn frobenius_map(&self, power: usize) -> Self {
         Fq12 {
             c0: self.c0.frobenius_map(power),
-            c1: self.c1
+            c1: self
+                .c1
                 .frobenius_map(power)
                 .scale(frobenius_coeffs_c1(power)),
         }
@@ -281,13 +281,6 @@ impl FieldElement for Fq12 {
         }
     }
 
-    fn random<R: Rng>(rng: &mut R) -> Self {
-        Fq12 {
-            c0: Fq6::random(rng),
-            c1: Fq6::random(rng),
-        }
-    }
-
     fn is_zero(&self) -> bool {
         self.c0.is_zero() && self.c1.is_zero()
     }
@@ -296,7 +289,8 @@ impl FieldElement for Fq12 {
         let ab = self.c0 * self.c1;
 
         Fq12 {
-            c0: (self.c1.mul_by_nonresidue() + self.c0) * (self.c0 + self.c1) - ab
+            c0: (self.c1.mul_by_nonresidue() + self.c0) * (self.c0 + self.c1)
+                - ab
                 - ab.mul_by_nonresidue(),
             c1: ab + ab,
         }

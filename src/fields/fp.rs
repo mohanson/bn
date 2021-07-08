@@ -1,14 +1,13 @@
-use alloc::vec::Vec;
-use core::ops::{Add, Mul, Neg, Sub};
-use rand::Rng;
-use crate::fields::FieldElement;
 use crate::arith::{U256, U512};
+use crate::fields::FieldElement;
+// use alloc::vec::Vec;
+use core::ops::{Add, Mul, Neg, Sub};
 
 macro_rules! field_impl {
     ($name:ident, $modulus:expr, $rsquared:expr, $rcubed:expr, $one:expr, $inv:expr) => {
         #[derive(Copy, Clone, PartialEq, Eq, Debug)]
         #[repr(C)]
-        pub struct $name(U256);
+        pub struct $name(pub U256);
 
         impl From<$name> for U256 {
             #[inline]
@@ -20,27 +19,33 @@ macro_rules! field_impl {
         }
 
         impl $name {
-            pub fn from_str(s: &str) -> Option<Self> {
-                let ints: Vec<_> = {
-                    let mut acc = Self::zero();
-                    (0..11).map(|_| {let tmp = acc; acc = acc + Self::one(); tmp}).collect()
-                };
+            // pub fn from_str(s: &str) -> Option<Self> {
+            //     let ints: Vec<_> = {
+            //         let mut acc = Self::zero();
+            //         (0..11)
+            //             .map(|_| {
+            //                 let tmp = acc;
+            //                 acc = acc + Self::one();
+            //                 tmp
+            //             })
+            //             .collect()
+            //     };
 
-                let mut res = Self::zero();
-                for c in s.chars() {
-                    match c.to_digit(10) {
-                        Some(d) => {
-                            res = res * ints[10];
-                            res = res + ints[d as usize];
-                        },
-                        None => {
-                            return None;
-                        }
-                    }
-                }
+            //     let mut res = Self::zero();
+            //     for c in s.chars() {
+            //         match c.to_digit(10) {
+            //             Some(d) => {
+            //                 res = res * ints[10];
+            //                 res = res + ints[d as usize];
+            //             }
+            //             None => {
+            //                 return None;
+            //             }
+            //         }
+            //     }
 
-                Some(res)
-            }
+            //     Some(res)
+            // }
 
             /// Converts a U256 to an Fp so long as it's below the modulus.
             pub fn new(mut a: U256) -> Option<Self> {
@@ -96,10 +101,6 @@ macro_rules! field_impl {
                 $name(U256::from($one))
             }
 
-            fn random<R: Rng>(rng: &mut R) -> Self {
-                $name(U256::random(rng, &U256::from($modulus)))
-            }
-
             #[inline]
             fn is_zero(&self) -> bool {
                 self.0.is_zero()
@@ -110,7 +111,8 @@ macro_rules! field_impl {
                     None
                 } else {
                     self.0.invert(&U256::from($modulus));
-                    self.0.mul(&U256::from($rcubed), &U256::from($modulus), $inv);
+                    self.0
+                        .mul(&U256::from($rcubed), &U256::from($modulus), $inv);
 
                     Some(self)
                 }
@@ -160,7 +162,7 @@ macro_rules! field_impl {
                 self
             }
         }
-    }
+    };
 }
 
 field_impl!(
@@ -230,15 +232,15 @@ lazy_static::lazy_static! {
         0x30644e72e131a029
     ]);
 
-	pub static ref FQ_MINUS3_DIV4: Fq =
-		Fq::new(3.into()).expect("3 is a valid field element and static; qed").neg() *
-		Fq::new(4.into()).expect("4 is a valid field element and static; qed").inverse()
-			.expect("4 has inverse in Fq and is static; qed");
+    pub static ref FQ_MINUS3_DIV4: Fq =
+        Fq::new(3.into()).expect("3 is a valid field element and static; qed").neg() *
+        Fq::new(4.into()).expect("4 is a valid field element and static; qed").inverse()
+            .expect("4 has inverse in Fq and is static; qed");
 
-	static ref FQ_MINUS1_DIV2: Fq =
-		Fq::new(1.into()).expect("1 is a valid field element and static; qed").neg() *
-		Fq::new(2.into()).expect("2 is a valid field element and static; qed").inverse()
-			.expect("2 has inverse in Fq and is static; qed");
+    static ref FQ_MINUS1_DIV2: Fq =
+        Fq::new(1.into()).expect("1 is a valid field element and static; qed").neg() *
+        Fq::new(2.into()).expect("2 is a valid field element and static; qed").inverse()
+            .expect("2 has inverse in Fq and is static; qed");
 
 }
 
@@ -265,31 +267,12 @@ pub fn const_fq(i: [u64; 4]) -> Fq {
 }
 
 #[test]
-fn test_rsquared() {
-    let rng = &mut ::rand::thread_rng();
-
-    for _ in 0..1000 {
-        let a = Fr::random(rng);
-        let b: U256 = a.into();
-        let c = Fr::new(b).unwrap();
-
-        assert_eq!(a, c);
-    }
-
-    for _ in 0..1000 {
-        let a = Fq::random(rng);
-        let b: U256 = a.into();
-        let c = Fq::new(b).unwrap();
-
-        assert_eq!(a, c);
-    }
-}
-
-
-#[test]
 fn sqrt_fq() {
     // from zcash test_proof.cpp
-    let fq1 = Fq::from_str("5204065062716160319596273903996315000119019512886596366359652578430118331601").unwrap();
+    let fq1 = Fq::from_str(
+        "5204065062716160319596273903996315000119019512886596366359652578430118331601",
+    )
+    .unwrap();
     let fq2 = Fq::from_str("348579348568").unwrap();
 
     assert_eq!(fq1, fq2.sqrt().expect("348579348568 is quadratic residue"));

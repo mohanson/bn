@@ -1,7 +1,6 @@
-use core::ops::{Add, Mul, Neg, Sub};
-use rand::Rng;
-use crate::fields::{const_fq, FieldElement, Fq};
 use crate::arith::{U256, U512};
+use crate::fields::{const_fq, FieldElement, Fq};
+use core::ops::{Add, Mul, Neg, Sub};
 
 #[inline]
 fn fq_non_residue() -> Fq {
@@ -36,8 +35,8 @@ pub fn fq2_nonresidue() -> Fq2 {
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(C)]
 pub struct Fq2 {
-    c0: Fq,
-    c1: Fq,
+    pub c0: Fq,
+    pub c1: Fq,
 }
 
 impl Fq2 {
@@ -91,13 +90,6 @@ impl FieldElement for Fq2 {
         }
     }
 
-    fn random<R: Rng>(rng: &mut R) -> Self {
-        Fq2 {
-            c0: Fq::random(rng),
-            c1: Fq::random(rng),
-        }
-    }
-
     fn is_zero(&self) -> bool {
         self.c0.is_zero() && self.c1.is_zero()
     }
@@ -110,7 +102,8 @@ impl FieldElement for Fq2 {
         let ab = self.c0 * self.c1;
 
         Fq2 {
-            c0: (self.c1 * fq_non_residue() + self.c0) * (self.c0 + self.c1) - ab
+            c0: (self.c1 * fq_non_residue() + self.c0) * (self.c0 + self.c1)
+                - ab
                 - ab * fq_non_residue(),
             c1: ab + ab,
         }
@@ -231,30 +224,40 @@ impl Fq2 {
     }
 }
 
-
 #[test]
 fn sqrt_fq2() {
     // from zcash test_proof.cpp
     let x1 = Fq2::new(
-        Fq::from_str("12844195307879678418043983815760255909500142247603239203345049921980497041944").unwrap(),
-        Fq::from_str("7476417578426924565731404322659619974551724117137577781074613937423560117731").unwrap(),
+        Fq::from_str(
+            "12844195307879678418043983815760255909500142247603239203345049921980497041944",
+        )
+        .unwrap(),
+        Fq::from_str(
+            "7476417578426924565731404322659619974551724117137577781074613937423560117731",
+        )
+        .unwrap(),
     );
 
     let x2 = Fq2::new(
-        Fq::from_str("3345897230485723946872934576923485762803457692345760237495682347502347589474").unwrap(),
-        Fq::from_str("1234912378405347958234756902345768290345762348957605678245967234857634857676").unwrap(),
+        Fq::from_str(
+            "3345897230485723946872934576923485762803457692345760237495682347502347589474",
+        )
+        .unwrap(),
+        Fq::from_str(
+            "1234912378405347958234756902345768290345762348957605678245967234857634857676",
+        )
+        .unwrap(),
     );
 
     assert_eq!(x2.sqrt().unwrap(), x1);
 
     // i is sqrt(-1)
-    assert_eq!(
-        Fq2::one().neg().sqrt().unwrap(),
-        Fq2::i(),
-    );
+    assert_eq!(Fq2::one().neg().sqrt().unwrap(), Fq2::i(),);
 
     // no sqrt for (1 + 2i)
     assert!(
-        Fq2::new(Fq::from_str("1").unwrap(), Fq::from_str("2").unwrap()).sqrt().is_none()
+        Fq2::new(Fq::from_str("1").unwrap(), Fq::from_str("2").unwrap())
+            .sqrt()
+            .is_none()
     );
 }
