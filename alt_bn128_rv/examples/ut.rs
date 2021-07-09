@@ -3,10 +3,13 @@
 #![feature(asm)]
 #![feature(lang_items)]
 
-pub fn exit(_: i8) -> ! {
+pub fn exit(code: i8) -> ! {
     unsafe {
-        asm!("li a7, 93");
-        asm!("ecall");
+        asm!("mv a0, {0}",
+             "li a7, 93",
+             "ecall",
+             in(reg) code,
+        )
     }
     loop {}
 }
@@ -23,7 +26,6 @@ extern "C" fn eh_personality() {}
 pub fn abort() -> ! {
     panic!("abort!")
 }
-
 
 #[no_mangle]
 pub fn _start() -> ! {
