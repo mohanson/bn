@@ -3,7 +3,7 @@
 #![feature(asm)]
 #![feature(lang_items)]
 
-pub fn exit(code: i8) -> ! {
+fn exit(code: i8) -> ! {
     unsafe {
         asm!("mv a0, {0}",
              "li a7, 93",
@@ -23,12 +23,12 @@ fn panic_handler(_: &core::panic::PanicInfo) -> ! {
 extern "C" fn eh_personality() {}
 
 #[no_mangle]
-pub fn abort() -> ! {
+fn abort() -> ! {
     panic!("abort!")
 }
 
 #[no_mangle]
-pub fn _start() -> ! {
+fn _start() -> ! {
     alt_bn128_rv::ethereum::ut::test_alt_bn128_add();
     alt_bn128_rv::ethereum::ut::test_alt_bn128_mul();
     alt_bn128_rv::ethereum::ut::test_alt_bn128_pairing();

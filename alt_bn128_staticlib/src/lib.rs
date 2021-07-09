@@ -1,12 +1,16 @@
 #![no_std]
 #![feature(asm)]
+#![feature(lang_items)]
 
 pub mod ethereum;
 
-pub fn exit(_: i8) -> ! {
+fn exit(code: i8) -> ! {
     unsafe {
-        asm!("li a7, 93");
-        asm!("ecall");
+        asm!("mv a0, {0}",
+             "li a7, 93",
+             "ecall",
+             in(reg) code,
+        )
     }
     loop {}
 }
@@ -15,3 +19,6 @@ pub fn exit(_: i8) -> ! {
 fn panic_handler(_: &core::panic::PanicInfo) -> ! {
     exit(-128);
 }
+
+#[lang = "eh_personality"]
+extern "C" fn eh_personality() {}
