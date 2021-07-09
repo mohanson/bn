@@ -10,6 +10,11 @@ rv:
 	cargo build --release --target riscv64imac-unknown-none-elf --example ut && \
 	$(RUNNER) target/riscv64imac-unknown-none-elf/release/examples/ut
 
+bench_pairing:
+	cd alt_bn128_rv && \
+	cargo build --release --target riscv64imac-unknown-none-elf --example bench_pairing && \
+	$(RUNNER) target/riscv64imac-unknown-none-elf/release/examples/bench_pairing
+
 staticlib:
 	cd alt_bn128_staticlib && \
 	cargo build --release --target riscv64imac-unknown-none-elf && \
