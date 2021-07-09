@@ -1,8 +1,17 @@
-RUNNER=/src/ckb-vm-run/target/release/int64
+RUNNER=/src/ckb-vm-run/target/release/asm
+RISCV=/root/app/riscv
 
 test:
+	cd alt_bn128 && \
 	cargo run --example ut
 
-risc:
-	cargo build --target riscv64imac-unknown-none-elf --release --example ut_riscv
-	$(RUNNER) target/riscv64imac-unknown-none-elf/release/examples/ut_riscv
+rv:
+	cd alt_bn128_rv && \
+	cargo build --release --target riscv64imac-unknown-none-elf --example ut && \
+	$(RUNNER) target/riscv64imac-unknown-none-elf/release/examples/ut
+
+staticlib:
+	cd alt_bn128_staticlib && \
+	cargo build --release --target riscv64imac-unknown-none-elf && \
+	$(RISCV)/bin/riscv64-unknown-elf-gcc -o target/ut examples/ut.c target/riscv64imac-unknown-none-elf/release/libalt_bn128.a && \
+	$(RUNNER) target/ut
