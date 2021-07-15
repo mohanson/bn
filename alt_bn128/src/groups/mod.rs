@@ -722,7 +722,7 @@ pub fn pairing_batch(ps: &[G1], qs: &[G2]) -> Fq12 {
     let mut q_precomputes = [G2Precomp::default(); 16];
     let mut idx = 0;
 
-    for (p, q) in ps.into_iter().zip(qs.into_iter()) {
+    for (p, q) in ps.iter().zip(qs.iter()) {
         let p_affine = p.to_affine();
         let q_affine = q.to_affine();
         let exists = match (p_affine, q_affine) {

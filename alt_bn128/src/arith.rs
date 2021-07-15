@@ -87,10 +87,10 @@ impl U512 {
         }
 
         let mut n = [0; 4];
-        for (l, i) in (0..4).rev().zip((0..4).map(|i| i * 16)) {
-            n[l] = BigEndian::read_u128(&s[i..]);
-        }
-
+        n[3] = BigEndian::read_u128(&s[0..]);
+        n[2] = BigEndian::read_u128(&s[16..]);
+        n[1] = BigEndian::read_u128(&s[32..]);
+        n[0] = BigEndian::read_u128(&s[48..]);
         Ok(U512(n))
     }
 
@@ -133,10 +133,10 @@ impl U512 {
 
     pub fn interpret(buf: &[u8; 64]) -> U512 {
         let mut n = [0; 4];
-        for (l, i) in (0..4).rev().zip((0..4).map(|i| i * 16)) {
-            n[l] = BigEndian::read_u128(&buf[i..]);
-        }
-
+        n[3] = BigEndian::read_u128(&buf[0..]);
+        n[2] = BigEndian::read_u128(&buf[16..]);
+        n[1] = BigEndian::read_u128(&buf[32..]);
+        n[0] = BigEndian::read_u128(&buf[48..]);
         U512(n)
     }
 }
@@ -196,12 +196,9 @@ impl U256 {
                 actual: s.len(),
             });
         }
-
         let mut n = [0; 2];
-        for (l, i) in (0..2).rev().zip((0..2).map(|i| i * 16)) {
-            n[l] = BigEndian::read_u128(&s[i..]);
-        }
-
+        n[1] = BigEndian::read_u128(&s[0..]);
+        n[0] = BigEndian::read_u128(&s[16..]);
         Ok(U256(n))
     }
 
@@ -212,11 +209,8 @@ impl U256 {
                 actual: s.len(),
             });
         }
-
-        for (l, i) in (0..2).rev().zip((0..2).map(|i| i * 16)) {
-            BigEndian::write_u128(&mut s[i..], self.0[l]);
-        }
-
+        BigEndian::write_u128(&mut s[0..], self.0[1]);
+        BigEndian::write_u128(&mut s[16..], self.0[0]);
         Ok(())
     }
 
@@ -468,14 +462,9 @@ fn mac_digit(from_index: usize, acc: &mut [u128; 4], b: &[u128; 2], c: u128) {
         for i in 0..2 {
             let a_index = i + from_index + 2;
             if a_index < 4 {
-                let (a_hi, a_lo) = split_u128(acc[a_index]);
-                let (carry_hi, carry_lo) = split_u128(carry);
-                let (x_hi, x_lo) = split_u128(a_lo + carry_lo);
-                let (r_hi, r_lo) = split_u128(x_hi + a_hi + carry_hi);
-
-                carry = r_hi;
-
-                acc[a_index] = combine_u128(r_lo, x_lo);
+                let (a, b) = acc[a_index].overflowing_add(carry);
+                acc[a_index] = a;
+                carry = b as u128;
             }
         }
     }
