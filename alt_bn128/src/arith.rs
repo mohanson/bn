@@ -144,15 +144,13 @@ impl U512 {
 impl Ord for U512 {
     #[inline]
     fn cmp(&self, other: &U512) -> Ordering {
-        for (a, b) in self.0.iter().zip(other.0.iter()).rev() {
-            if *a < *b {
-                return Ordering::Less;
-            } else if *a > *b {
-                return Ordering::Greater;
-            }
+        if self.0[1] < other.0[1] {
+            return Ordering::Less;
         }
-
-        return Ordering::Equal;
+        if self.0[1] > other.0[1] {
+            return Ordering::Greater;
+        }
+        self.0[0].cmp(&other.0[0])
     }
 }
 
@@ -166,15 +164,13 @@ impl PartialOrd for U512 {
 impl Ord for U256 {
     #[inline]
     fn cmp(&self, other: &U256) -> Ordering {
-        for (a, b) in self.0.iter().zip(other.0.iter()).rev() {
-            if *a < *b {
-                return Ordering::Less;
-            } else if *a > *b {
-                return Ordering::Greater;
-            }
+        if self.0[1] < other.0[1] {
+            return Ordering::Less;
         }
-
-        return Ordering::Equal;
+        if self.0[1] > other.0[1] {
+            return Ordering::Greater;
+        }
+        self.0[0].cmp(&other.0[0])
     }
 }
 
