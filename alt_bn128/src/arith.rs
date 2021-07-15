@@ -410,24 +410,17 @@ fn combine_u128(hi: u128, lo: u128) -> u128 {
 
 #[inline]
 fn adc(a: u128, b: u128, carry: &mut u128) -> u128 {
-    let (a1, a0) = split_u128(a);
-    let (b1, b0) = split_u128(b);
-    let (c, r0) = split_u128(a0 + b0 + *carry);
-    let (c, r1) = split_u128(a1 + b1 + c);
-    *carry = c;
-
-    combine_u128(r1, r0)
+    let (c, d) = a.overflowing_add(b);
+    let (e, f) = c.overflowing_add(*carry);
+    *carry = (d | f) as u128;
+    e
 }
 
 #[inline]
 fn add_nocarry(a: &mut [u128; 2], b: &[u128; 2]) {
-    let mut carry = 0;
-
-    for (a, b) in a.into_iter().zip(b.iter()) {
-        *a = adc(*a, *b, &mut carry);
-    }
-
-    debug_assert!(0 == carry);
+    let (c, d) = a[0].overflowing_add(b[0]);
+    a[0] = c;
+    a[1] = a[1] + b[1] + d as u128;
 }
 
 #[inline]
