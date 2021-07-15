@@ -425,25 +425,9 @@ fn add_nocarry(a: &mut [u128; 2], b: &[u128; 2]) {
 
 #[inline]
 fn sub_noborrow(a: &mut [u128; 2], b: &[u128; 2]) {
-    #[inline]
-    fn sbb(a: u128, b: u128, borrow: &mut u128) -> u128 {
-        let (a1, a0) = split_u128(a);
-        let (b1, b0) = split_u128(b);
-        let (b, r0) = split_u128((1 << 64) + a0 - b0 - *borrow);
-        let (b, r1) = split_u128((1 << 64) + a1 - b1 - ((b == 0) as u128));
-
-        *borrow = (b == 0) as u128;
-
-        combine_u128(r1, r0)
-    }
-
-    let mut borrow = 0;
-
-    for (a, b) in a.into_iter().zip(b.iter()) {
-        *a = sbb(*a, *b, &mut borrow);
-    }
-
-    debug_assert!(0 == borrow);
+    let (c, d) = a[0].overflowing_sub(b[0]);
+    a[0] = c;
+    a[1] = a[1] - b[1] - d as u128;
 }
 
 // TODO: Make `from_index` a const param
