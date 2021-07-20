@@ -2,7 +2,11 @@
 name = "alt_bn128_rv"
 version = "0.1.0"
 edition = "2018"
-authors = ["Mohanson <mohanson@outlook.com>"]
+authors = ["Sean Bowe <ewillbefull@gmail.com>", "Parity Technologies <admin@parity.io>", "Mohanson <mohanson@outlook.com>"]
+description = "Pairing cryptography with the Barreto-Naehrig curve"
+keywords = ["pairing", "crypto", "cryptography"]
+homepage = "https://github.com/paritytech/bn"
+repository = "https://github.com/paritytech/bn"
 license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -10,5 +14,19 @@ license = "MIT OR Apache-2.0"
 [profile.release]
 lto = "fat"
 
+[profile.dev]
+opt-level = 3
+debug = true
+debug-assertions = false
+overflow-checks = false
+lto = "fat"
+incremental = false
+codegen-units = 16
+
 [dependencies]
-alt_bn128 = { path="../alt_bn128" }
+byteorder = { version = "1.0", features = ["i128"], default-features = false }
+crunchy = "0.2.1"
+lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
+
+[build-dependencies]
+cc = "1"
