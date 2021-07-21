@@ -11,15 +11,15 @@ license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[profile.release]
-lto = "fat"
+# [profile.release]
+# lto = "fat"
 
 [profile.dev]
 opt-level = 3
 debug = true
 debug-assertions = false
 overflow-checks = false
-lto = "fat"
+# lto = "fat"
 incremental = false
 codegen-units = 16
 

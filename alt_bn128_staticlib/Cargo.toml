@@ -11,8 +11,8 @@ license = "MIT OR Apache-2.0"
 name = "alt_bn128"
 crate-type = ["staticlib"]
 
-[profile.release]
-lto = "fat"
+# [profile.release]
+# lto = "fat"
 
 [dependencies]
 alt_bn128 = { path="../alt_bn128" }
