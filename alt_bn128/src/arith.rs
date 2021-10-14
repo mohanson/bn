@@ -144,6 +144,18 @@ impl U512 {
 impl Ord for U512 {
     #[inline]
     fn cmp(&self, other: &U512) -> Ordering {
+        if self.0[3] < other.0[3] {
+            return Ordering::Less;
+        }
+        if self.0[3] > other.0[3] {
+            return Ordering::Greater;
+        }
+        if self.0[2] < other.0[2] {
+            return Ordering::Less;
+        }
+        if self.0[2] > other.0[2] {
+            return Ordering::Greater;
+        }
         if self.0[1] < other.0[1] {
             return Ordering::Less;
         }
