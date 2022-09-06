@@ -1,7 +1,8 @@
 #![no_std]
 #![no_main]
-#![feature(asm)]
 #![feature(lang_items)]
+
+use core::arch::asm;
 
 fn exit(code: i8) -> ! {
     unsafe {

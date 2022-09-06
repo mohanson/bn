@@ -1,8 +1,8 @@
 #![no_std]
-#![feature(asm)]
 #![feature(lang_items)]
 
 pub mod ethereum;
+use core::arch::asm;
 
 fn exit(code: i8) -> ! {
     unsafe {
