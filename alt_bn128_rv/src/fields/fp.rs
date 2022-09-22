@@ -152,7 +152,7 @@ macro_rules! field_impl {
                         &n as *const u128 as *const u64,
                         k as u64,
                     );
-                    self.0.0 = ret;
+                    self.0 .0 = ret;
                     self
                 }
             }
