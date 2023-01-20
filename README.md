@@ -7,7 +7,7 @@ This repo implements the following EIPs on CKB-VM:
 
 ```sh
 export RISCV=/opt/riscv
-export RISCV_RUNNER=~/ckb-vm-run/target/release/mop
+export RISCV_RUNNER=/path/to/ckb-vm/target/release/examples/ckb-vm-runner
 
 # Build alt_bn128 to native and test it in rust
 make alt_bn128

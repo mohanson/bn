@@ -10,15 +10,13 @@ endif
 
 alt_bn128:
 	cd alt_bn128 && cargo clean
-	cd alt_bn128 && cargo run --example ut
+	cd alt_bn128 && cargo run --release --example ut
+	cd alt_bn128 && cargo run --release --example bench_pairing
 
 alt_bn128_rv:
 	cd alt_bn128_rv && cargo clean
 	cd alt_bn128_rv && cargo build --release --target riscv64imac-unknown-none-elf --example ut
 	cd alt_bn128_rv && $(RISCV_RUNNER) target/riscv64imac-unknown-none-elf/release/examples/ut
-
-alt_bn128_rv_bench_pairing:
-	cd alt_bn128_rv && cargo clean
 	cd alt_bn128_rv && cargo build --release --target riscv64imac-unknown-none-elf --example bench_pairing
 	cd alt_bn128_rv && $(RISCV_RUNNER) target/riscv64imac-unknown-none-elf/release/examples/bench_pairing
 
